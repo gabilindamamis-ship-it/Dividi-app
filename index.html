@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6d4aff">
+  <title>Dividi — despesas sem confusão</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Dividi início"><span class="brand-mark">d</span><span>dividi</span></a>
+      <div class="workspace-label">SEU ESPAÇO</div>
+      <button class="nav-item active" data-view="overview"><span>▦</span> Visão geral</button>
+      <button class="nav-item" data-view="expenses"><span>↔</span> Despesas</button>
+      <button class="nav-item" data-view="settlements"><span>✓</span> Acertos de contas</button>
+      <div class="sidebar-section">
+        <div class="workspace-label">SEUS GRUPOS</div>
+        <div id="group-list"></div>
+        <button class="nav-item add-group" id="add-group-btn"><span>＋</span> Novo grupo</button>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="avatar">G</div><div class="profile-copy"><strong>Modo demonstração</strong><small>Seus dados ficam neste navegador</small></div>
+        <button class="icon-button" id="reset-demo" title="Restaurar demonstração" aria-label="Restaurar demonstração">↻</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Abrir menu">☰</button>
+        <div class="breadcrumb">Seu espaço <span>/</span> <strong id="breadcrumb-title">Visão geral</strong></div>
+        <div class="top-actions"><span class="demo-pill"><i></i> Demonstração</span><button class="avatar small" aria-label="Perfil">G</button></div>
+      </header>
+
+      <section class="page" id="overview-view">
+        <div class="page-heading">
+          <div><p class="eyebrow" id="today-label">SEU RESUMO</p><h1>Despesas sem confusão.</h1><p class="subheading">Veja o que está acontecendo nos seus grupos.</p></div>
+          <button class="primary-button" id="quick-add"><span>＋</span> Adicionar despesa</button>
+        </div>
+        <div class="summary-grid">
+          <article class="summary-card balance-card"><div class="card-label">Seu saldo total <span class="info-dot" title="Soma dos seus saldos nos grupos">i</span></div><div class="summary-value" id="my-balance">R$ 0,00</div><div class="summary-foot" id="balance-caption">Entre os grupos ativos</div><div class="balance-decoration">↗</div></article>
+          <article class="summary-card"><div class="card-label">Total de despesas do grupo</div><div class="summary-value" id="group-total">R$ 0,00</div><div class="summary-foot" id="group-count">Neste grupo</div><div class="mini-icon purple">▤</div></article>
+          <article class="summary-card"><div class="card-label">Você precisa receber</div><div class="summary-value positive" id="owed-to-me">R$ 0,00</div><div class="summary-foot">Dos outros participantes</div><div class="mini-icon green">↓</div></article>
+          <article class="summary-card"><div class="card-label">Você precisa pagar</div><div class="summary-value negative" id="i-owe">R$ 0,00</div><div class="summary-foot">Para os outros participantes</div><div class="mini-icon orange">↑</div></article>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel group-panel">
+            <div class="panel-heading"><div><h2>Seus grupos</h2><p>Organize as contas por ocasião.</p></div><button class="text-button" id="see-groups">Ver todos <span>→</span></button></div>
+            <div id="group-cards" class="group-cards"></div>
+          </section>
+          <section class="panel settlement-panel">
+            <div class="panel-heading"><div><h2>Precisa acertar</h2><p>Uma forma simples de deixar tudo em dia.</p></div><span class="panel-icon">⇄</span></div>
+            <div id="settlement-preview"></div>
+            <button class="secondary-button full-width" data-view="settlements">Ver plano de acertos</button>
+          </section>
+        </div>
+        <section class="panel activity-panel">
+          <div class="panel-heading"><div><h2>Atividade recente</h2><p>As últimas movimentações dos seus grupos.</p></div><button class="text-button" data-view="expenses">Ver despesas <span>→</span></button></div>
+          <div class="table-wrap"><table><thead><tr><th>DESPESA</th><th>GRUPO</th><th>QUEM PAGOU</th><th>DATA</th><th>VALOR</th></tr></thead><tbody id="recent-expenses"></tbody></table></div>
+        </section>
+      </section>
+
+      <section class="page hidden" id="expenses-view">
+        <div class="page-heading"><div><p class="eyebrow">MOVIMENTAÇÕES</p><h1>Despesas</h1><p class="subheading">Cada gasto, com divisão e histórico transparentes.</p></div><button class="primary-button" id="expense-add"><span>＋</span> Nova despesa</button></div>
+        <section class="panel">
+          <div class="filters">
+            <label class="search-box"><span>⌕</span><input id="search-expenses" placeholder="Buscar despesas..." aria-label="Buscar despesas"></label>
+            <select id="filter-category" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option><option>Alimentação</option><option>Transporte</option><option>Hospedagem</option><option>Casa</option><option>Lazer</option><option>Outros</option></select>
+            <select id="filter-member" aria-label="Filtrar por membro"><option value="">Todos os membros</option></select>
+            <input id="filter-date" type="date" aria-label="Filtrar a partir da data">
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>DESPESA</th><th>GRUPO</th><th>CATEGORIA</th><th>QUEM PAGOU</th><th>DATA</th><th>VALOR</th></tr></thead><tbody id="expenses-table"></tbody></table></div>
+          <div class="empty-state hidden" id="empty-expenses">Nenhuma despesa corresponde aos filtros.</div>
+        </section>
+      </section>
+
+      <section class="page hidden" id="settlements-view">
+        <div class="page-heading"><div><p class="eyebrow">SALDOS TRANSPARENTES</p><h1>Acertos de contas</h1><p class="subheading">Menos transferências, mais clareza para todo mundo.</p></div></div>
+        <div class="settlement-intro"><div class="settle-graphic">⇄</div><div><h2>Quem deve a quem?</h2><p>As sugestões abaixo simplificam os saldos líquidos. Confira os valores e registre cada pagamento quando ele acontecer.</p></div></div>
+        <section class="panel"><div class="panel-heading"><div><h2>Plano de acertos</h2><p>Valores calculados com base nas despesas registradas.</p></div><span class="status-tag">Atualizado</span></div><div id="settlement-list" class="settlement-list"></div></section>
+        <section class="panel history-panel"><div class="panel-heading"><div><h2>Pagamentos registrados</h2><p>Liquidações totais e parciais do grupo.</p></div></div><div id="payment-history"></div></section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="expense-modal">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="expense-modal-title">
+      <div class="modal-header"><div><p class="eyebrow">NOVA MOVIMENTAÇÃO</p><h2 id="expense-modal-title">Adicionar despesa</h2></div><button class="icon-button close-modal" aria-label="Fechar">×</button></div>
+      <form id="expense-form">
+        <label class="field-label">Descrição<input id="expense-description" required maxlength="80" placeholder="Ex.: Compras do mercado"></label>
+        <div class="form-row"><label class="field-label">Valor<input id="expense-amount" type="number" min="0.01" step="0.01" required placeholder="0,00"></label><label class="field-label">Moeda<select id="expense-currency"><option value="BRL">BRL — Real brasileiro</option><option value="USD">USD — Dólar americano</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Libra esterlina</option><option value="ARS">ARS — Peso argentino</option><option value="JPY">JPY — Iene japonês</option></select></label></div>
+        <div class="form-row"><label class="field-label">Grupo<select id="expense-group" required></select></label><label class="field-label">Quem pagou<select id="expense-payer" required></select></label></div>
+        <div class="form-row"><label class="field-label">Categoria<select id="expense-category"><option>Alimentação</option><option>Transporte</option><option>Hospedagem</option><option>Casa</option><option>Lazer</option><option>Outros</option></select></label><label class="field-label">Data<input id="expense-date" type="date" required></label></div>
+        <div class="field-label">Dividir entre <span class="muted">(selecione os participantes)</span></div><div class="member-picker" id="expense-members"></div>
+        <div class="split-options"><label class="field-label">Tipo de divisão<select id="split-type"><option value="equal">Igualmente</option><option value="exact">Valores exatos</option><option value="percent">Percentagens</option><option value="shares">Quotas</option></select></label><div id="split-details"></div></div>
+        <div class="conversion-note" id="conversion-note">A conversão será consultada ao salvar.</div>
+        <div class="form-error hidden" id="expense-error" role="alert"></div>
+        <div class="modal-footer"><button type="button" class="secondary-button close-modal">Cancelar</button><button type="submit" class="primary-button" id="save-expense">Salvar despesa</button></div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="group-modal">
+    <section class="modal small-modal" role="dialog" aria-modal="true" aria-labelledby="group-modal-title">
+      <div class="modal-header"><div><p class="eyebrow">NOVO ESPAÇO COMPARTILHADO</p><h2 id="group-modal-title">Criar grupo</h2></div><button class="icon-button close-modal" aria-label="Fechar">×</button></div>
+      <form id="group-form">
+        <label class="field-label">Nome do grupo<input id="group-name" required maxlength="50" placeholder="Ex.: Viagem de férias"></label>
+        <label class="field-label">Moeda padrão<select id="group-currency"><option value="BRL">BRL — Real brasileiro</option><option value="USD">USD — Dólar americano</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Libra esterlina</option></select></label>
+        <label class="field-label">Participantes <span class="muted">(separe os nomes por vírgula)</span><textarea id="group-members-input" required rows="3" placeholder="Gabrielly, Alex, Bia"></textarea></label>
+        <div class="form-error hidden" id="group-error" role="alert"></div>
+        <div class="modal-footer"><button type="button" class="secondary-button close-modal">Cancelar</button><button type="submit" class="primary-button">Criar grupo</button></div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="payment-modal">
+    <section class="modal small-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+      <div class="modal-header"><div><p class="eyebrow">REGISTRAR LIQUIDAÇÃO</p><h2 id="payment-title">Confirmar acerto</h2></div><button class="icon-button close-modal" aria-label="Fechar">×</button></div>
+      <form id="payment-form">
+        <p class="payment-explainer" id="payment-explainer"></p>
+        <label class="field-label">Valor pago<input id="payment-amount" type="number" min="0.01" step="0.01" required></label>
+        <label class="field-label">Data do pagamento<input id="payment-date" type="date" required></label>
+        <div class="form-error hidden" id="payment-error" role="alert"></div>
+        <div class="modal-footer"><button type="button" class="secondary-button close-modal">Cancelar</button><button type="submit" class="primary-button">Registrar pagamento</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
